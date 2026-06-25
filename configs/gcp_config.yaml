@@ -1,0 +1,8 @@
+gcp:
+    project_id: "credit-risk-mlops-504306"
+    region: "us-central1"
+    bucket_name: "credit-risk-mlops-data"
+    dvc_remote_path: "gs://credit-risk-mlops-data/dvc-store"
+    mlflow_artifact_path: "gs://credit-risk-mlops-data/mlflow-artifacts"
+    artifact_registry_repo: "credit-risk-repo"
+    cloud_run_service: "credit-risk-api"

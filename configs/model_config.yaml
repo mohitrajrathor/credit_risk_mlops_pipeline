@@ -1,0 +1,26 @@
+models:
+    logistic_regression:
+      name: "LogisticRegression"
+      params:
+        C: 1.0
+        max_iter: 1000
+        random_state: 42
+
+    xgboost:
+      name: "XGBoostClassifier"
+      params:
+        n_estimators: 200
+        max_depth: 6
+        learning_rate: 0.05
+        subsample: 0.8
+        random_state: 42
+
+    lightgbm:
+      name: "LightGBMClassifier"
+      params:
+        n_estimators: 200
+        max_depth: 6
+        learning_rate: 0.05
+        num_leaves: 31
+        random_state: 42
+        verbose: -1
