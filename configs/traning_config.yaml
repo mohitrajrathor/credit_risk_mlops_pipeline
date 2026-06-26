@@ -1,20 +1,22 @@
 training:
-    test_size: 0.2
-    random_state: 42
-    cv_folds: 5
-    primary_metric: "f1_weighted"
-    risk_thresholds:
-      low: 0.0
-      medium: 0.4
-      high: 0.7
+  test_size: 0.2
+  random_state: 42
+  cv_folds: 5
+  primary_metric: "f1_weighted"
+  stratify: true
 
-mlflow:
-  experiment_name: "credit-risk-analysis"
-  run_tags:
-    project: "credit-risk-MLOps"
-    author: "Mohit Raj Rathor"
+evaluation:
+  metrics:
+    - accuracy
+    - f1_weighted
+    - precision_weighted
+    - recall_weighted
+    - roc_auc
 
 artifacts:
-  models_dir: "artifacts/models/"
-  plots_dir: "artifacts/plots/"
-  metrics_path: "metrics.json"
+  artifacts_dir: "artifacts"
+  models_dir: "artifacts/models"
+  plots_dir: "artifacts/plots"
+  metrics_path: "artifacts/metrics.json"
+  training_results_path: "artifacts/training_results.json"
+  shap_explainer_path: "artifacts/shap_explainer.pkl"

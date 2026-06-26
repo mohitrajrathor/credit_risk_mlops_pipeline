@@ -1,28 +1,57 @@
+project:
+  root_dir: "."
+
 data:
-    raw_data_path: "data/raw/credit_risk_dataset.csv"
-    processed_dir: "data/processed/"
-    train_path: "data/processed/train.csv"
-    test_path: "data/processed/test.csv"
+  raw_data_path: "data/raw/credit_risk_dataset.csv"
+  processed_dir: "data/processed"
+  train_path: "data/processed/train.csv"
+  test_path: "data/processed/test.csv"
 
 schema:
-    target_column: "loan_status"
-    numerical_features:
-        - person_age
-        - person_income
-        - person_emp_length
-        - loan_amnt
-        - loan_int_rate
-        - loan_percent_income
-        - cb_person_cred_hist_length
-    categorical_features:
-        - person_home_ownership
-        - loan_intent
-        - loan_grade
-        - cb_person_default_on_file
-    drop_columns: []
+  target_column: "loan_status"
+  numerical_features:
+    - person_age
+    - person_income
+    - person_emp_length
+    - loan_amnt
+    - loan_int_rate
+    - loan_percent_income
+    - cb_person_cred_hist_length
+  categorical_features:
+    - person_home_ownership
+    - loan_intent
+    - loan_grade
+    - cb_person_default_on_file
+  derived_features:
+    - loan_to_income
+    - emp_length_to_age
+  drop_columns: []
+  expected_columns:
+    - person_age
+    - person_income
+    - person_home_ownership
+    - person_emp_length
+    - loan_intent
+    - loan_grade
+    - loan_amnt
+    - loan_int_rate
+    - loan_status
+    - loan_percent_income
+    - cb_person_default_on_file
+    - cb_person_cred_hist_length
 
 preprocessing:
-    imputation_strategy: "median"
-    scaling: "standard"
-    encoding: "label"
-    null_threshold: 0.4
+  numerical_imputation_strategy: "median"
+  categorical_imputation_strategy: "most_frequent"
+  scaling: "standard"
+  encoding: "label"
+  null_threshold: 0.40
+  correlation_threshold: 0.95
+
+artifacts:
+  artifacts_dir: "artifacts"
+  ingestion_report_path: "artifacts/ingestion_report.json"
+  validation_report_path: "artifacts/validation_report.json"
+  encoders_path: "artifacts/encoders.pkl"
+  scaler_path: "artifacts/scaler.pkl"
+  feature_list_path: "artifacts/feature_list.json"

@@ -1,26 +1,33 @@
 models:
-    logistic_regression:
-      name: "LogisticRegression"
-      params:
-        C: 1.0
-        max_iter: 1000
-        random_state: 42
+  logistic_regression:
+    enabled: true
+    name: "logistic_regression"
+    params:
+      C: 1.0
+      max_iter: 1000
+      random_state: 42
+      solver: "liblinear"
 
-    xgboost:
-      name: "XGBoostClassifier"
-      params:
-        n_estimators: 200
-        max_depth: 6
-        learning_rate: 0.05
-        subsample: 0.8
-        random_state: 42
+  xgboost:
+    enabled: true
+    name: "xgboost"
+    params:
+      n_estimators: 200
+      max_depth: 6
+      learning_rate: 0.05
+      subsample: 0.8
+      colsample_bytree: 0.8
+      random_state: 42
+      eval_metric: "logloss"
 
-    lightgbm:
-      name: "LightGBMClassifier"
-      params:
-        n_estimators: 200
-        max_depth: 6
-        learning_rate: 0.05
-        num_leaves: 31
-        random_state: 42
-        verbose: -1
+  lightgbm:
+    enabled: true
+    name: "lightgbm"
+    params:
+      n_estimators: 200
+      max_depth: 6
+      learning_rate: 0.05
+      num_leaves: 31
+      random_state: 42
+      verbose: -1
+      force_col_wise: true
