@@ -55,3 +55,5 @@ artifacts:
   encoders_path: "artifacts/encoders.pkl"
   scaler_path: "artifacts/scaler.pkl"
   feature_list_path: "artifacts/feature_list.json"
+  best_model_info_path: "artifacts/best_model_info.json"
+  label_mapping_path: "artifacts/label_mapping.json"
