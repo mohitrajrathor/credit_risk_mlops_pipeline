@@ -6,3 +6,6 @@ gcp:
     mlflow_artifact_path: "gs://credit-risk-mlops-data/mlflow-artifacts"
     artifact_registry_repo: "credit-risk-repo"
     cloud_run_service: "credit-risk-api"
+    sa-account: "credit-risk-sa"
+    pool-id: "credit-risk-github-pool"
+    
