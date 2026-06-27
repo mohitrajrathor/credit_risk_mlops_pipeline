@@ -220,16 +220,12 @@ __marimo__/
 .streamlit/secrets.toml
 
 my_store/
-data/
-mlruns/
 
 
 venv/
 __pycache__/
 *.pyc
 .env
-data/raw/
-data/processed/
 artifacts/
 mlruns/
 *.pkl

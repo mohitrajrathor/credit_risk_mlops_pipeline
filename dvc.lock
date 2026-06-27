@@ -1,0 +1,435 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: PYTHONPATH=. uv run --no-sync src/data_processing/ingestion.py
+    deps:
+    - path: configs/data_config.yaml
+      hash: md5
+      md5: 0e8b398adfc614a558f2d20ce20544b8
+      size: 1514
+    - path: data/raw/credit_risk_dataset.csv
+      hash: md5
+      md5: 9a01768113784fa109745fd8fe031eee
+      size: 1804682
+    - path: src/data_processing/ingestion.py
+      hash: md5
+      md5: 29a9c6763f30aa736500452164261028
+      size: 1930
+    - path: src/utils/config_loader.py
+      hash: md5
+      md5: 549114ca8dc5ebd2472a36baa1e70071
+      size: 1215
+    - path: src/utils/logger.py
+      hash: md5
+      md5: 57d4314c7796d4474a773a4c2733f295
+      size: 548
+    params:
+      params.yaml:
+        data.null_threshold: 0.4
+    outs:
+    - path: artifacts/ingestion_report.json
+      hash: md5
+      md5: efb03ba1955568f1ff3b7ed03d1ea0df
+      size: 1589
+  data_validation:
+    cmd: PYTHONPATH=. uv run --no-sync src/data_processing/validation.py
+    deps:
+    - path: artifacts/ingestion_report.json
+      hash: md5
+      md5: efb03ba1955568f1ff3b7ed03d1ea0df
+      size: 1589
+    - path: configs/data_config.yaml
+      hash: md5
+      md5: 0e8b398adfc614a558f2d20ce20544b8
+      size: 1514
+    - path: data/raw/credit_risk_dataset.csv
+      hash: md5
+      md5: 9a01768113784fa109745fd8fe031eee
+      size: 1804682
+    - path: src/data_processing/ingestion.py
+      hash: md5
+      md5: 29a9c6763f30aa736500452164261028
+      size: 1930
+    - path: src/data_processing/validation.py
+      hash: md5
+      md5: 3e53e9efabc58fb9316e9dcc498fd8d5
+      size: 2144
+    - path: src/utils/config_loader.py
+      hash: md5
+      md5: 549114ca8dc5ebd2472a36baa1e70071
+      size: 1215
+    - path: src/utils/logger.py
+      hash: md5
+      md5: 57d4314c7796d4474a773a4c2733f295
+      size: 548
+    params:
+      params.yaml:
+        data.null_threshold: 0.4
+    outs:
+    - path: artifacts/validation_report.json
+      hash: md5
+      md5: 1ebde40965e77649751bfe24cb981d2d
+      size: 513
+  data_transformation:
+    cmd: PYTHONPATH=. uv run --no-sync src/data_processing/transformation.py
+    deps:
+    - path: artifacts/validation_report.json
+      hash: md5
+      md5: 1ebde40965e77649751bfe24cb981d2d
+      size: 513
+    - path: configs/data_config.yaml
+      hash: md5
+      md5: 0e8b398adfc614a558f2d20ce20544b8
+      size: 1514
+    - path: configs/traning_config.yaml
+      hash: md5
+      md5: 3b5a7df651945ddda2e6db635d547c75
+      size: 486
+    - path: data/raw/credit_risk_dataset.csv
+      hash: md5
+      md5: 9a01768113784fa109745fd8fe031eee
+      size: 1804682
+    - path: src/data_processing/ingestion.py
+      hash: md5
+      md5: 29a9c6763f30aa736500452164261028
+      size: 1930
+    - path: src/data_processing/transformation.py
+      hash: md5
+      md5: 4a03f455e9dea12847da72af9882c529
+      size: 3720
+    - path: src/utils/config_loader.py
+      hash: md5
+      md5: 549114ca8dc5ebd2472a36baa1e70071
+      size: 1215
+    - path: src/utils/logger.py
+      hash: md5
+      md5: 57d4314c7796d4474a773a4c2733f295
+      size: 548
+    params:
+      params.yaml:
+        data.null_threshold: 0.4
+        data.random_state: 42
+        data.test_size: 0.2
+    outs:
+    - path: artifacts/encoders.pkl
+      hash: md5
+      md5: 5164984b12335157fd6bf412a309d922
+      size: 1588
+    - path: artifacts/scaler.pkl
+      hash: md5
+      md5: 42b9a30969c6262567fed4b90d3ba175
+      size: 1215
+    - path: data/processed
+      hash: md5
+      md5: 9797b24446746fccb4ad59ed5cfa0390.dir
+      size: 4838321
+      nfiles: 2
+  feature_engineering:
+    cmd: PYTHONPATH=. uv run --no-sync src/features/feature_engineering.py
+    deps:
+    - path: configs/data_config.yaml
+      hash: md5
+      md5: 0e8b398adfc614a558f2d20ce20544b8
+      size: 1514
+    - path: configs/traning_config.yaml
+      hash: md5
+      md5: 3b5a7df651945ddda2e6db635d547c75
+      size: 486
+    - path: data/processed
+      hash: md5
+      md5: 9797b24446746fccb4ad59ed5cfa0390.dir
+      size: 4838321
+      nfiles: 2
+    - path: data/raw/credit_risk_dataset.csv
+      hash: md5
+      md5: 9a01768113784fa109745fd8fe031eee
+      size: 1804682
+    - path: src/data_processing/ingestion.py
+      hash: md5
+      md5: 29a9c6763f30aa736500452164261028
+      size: 1930
+    - path: src/data_processing/transformation.py
+      hash: md5
+      md5: 4a03f455e9dea12847da72af9882c529
+      size: 3720
+    - path: src/features/feature_engineering.py
+      hash: md5
+      md5: 5780407d2c6388adbe5548a8b349bd9b
+      size: 3338
+    - path: src/utils/config_loader.py
+      hash: md5
+      md5: 549114ca8dc5ebd2472a36baa1e70071
+      size: 1215
+    - path: src/utils/logger.py
+      hash: md5
+      md5: 57d4314c7796d4474a773a4c2733f295
+      size: 548
+    params:
+      params.yaml:
+        data.random_state: 42
+        data.test_size: 0.2
+    outs:
+    - path: artifacts/feature_list.json
+      hash: md5
+      md5: 22936c305d8e30b5d9f68fdbeec5b332
+      size: 371
+  model_training:
+    cmd: PYTHONPATH=. uv run --no-sync src/models/train.py
+    deps:
+    - path: artifacts/feature_list.json
+      hash: md5
+      md5: 22936c305d8e30b5d9f68fdbeec5b332
+      size: 371
+    - path: configs/data_config.yaml
+      hash: md5
+      md5: 0e8b398adfc614a558f2d20ce20544b8
+      size: 1514
+    - path: configs/model_config.yaml
+      hash: md5
+      md5: 931c4c3a782524c425464cdf9be5bc86
+      size: 630
+    - path: configs/traning_config.yaml
+      hash: md5
+      md5: 3b5a7df651945ddda2e6db635d547c75
+      size: 486
+    - path: data/processed
+      hash: md5
+      md5: 9797b24446746fccb4ad59ed5cfa0390.dir
+      size: 4838321
+      nfiles: 2
+    - path: data/raw/credit_risk_dataset.csv
+      hash: md5
+      md5: 9a01768113784fa109745fd8fe031eee
+      size: 1804682
+    - path: src/data_processing/ingestion.py
+      hash: md5
+      md5: 29a9c6763f30aa736500452164261028
+      size: 1930
+    - path: src/data_processing/transformation.py
+      hash: md5
+      md5: 4a03f455e9dea12847da72af9882c529
+      size: 3720
+    - path: src/features/feature_engineering.py
+      hash: md5
+      md5: 5780407d2c6388adbe5548a8b349bd9b
+      size: 3338
+    - path: src/models/train.py
+      hash: md5
+      md5: 849f469abc7603d897aacb331c3550f6
+      size: 3379
+    - path: src/utils/config_loader.py
+      hash: md5
+      md5: 549114ca8dc5ebd2472a36baa1e70071
+      size: 1215
+    - path: src/utils/logger.py
+      hash: md5
+      md5: 57d4314c7796d4474a773a4c2733f295
+      size: 548
+    params:
+      params.yaml:
+        data.random_state: 42
+        data.test_size: 0.2
+        models.lightgbm:
+          n_estimators: 200
+          max_depth: 6
+          learning_rate: 0.05
+          num_leaves: 31
+        models.logistic_regression:
+          C: 1.0
+          max_iter: 1000
+          solver: liblinear
+        models.xgboost:
+          n_estimators: 200
+          max_depth: 6
+          learning_rate: 0.06
+          subsample: 0.8
+          colsample_bytree: 0.8
+    outs:
+    - path: artifacts/models
+      hash: md5
+      md5: cbd37afe48edcc55e58d559bc8061599.dir
+      size: 1322539
+      nfiles: 3
+    - path: artifacts/training_results.json
+      hash: md5
+      md5: 1ccbccde2c26f707c64156e3c04a042b
+      size: 939
+  model_evaluation:
+    cmd: PYTHONPATH=. uv run --no-sync src/models/evaluate.py
+    deps:
+    - path: artifacts/feature_list.json
+      hash: md5
+      md5: 22936c305d8e30b5d9f68fdbeec5b332
+      size: 371
+    - path: artifacts/models
+      hash: md5
+      md5: cbd37afe48edcc55e58d559bc8061599.dir
+      size: 1322539
+      nfiles: 3
+    - path: configs/data_config.yaml
+      hash: md5
+      md5: 0e8b398adfc614a558f2d20ce20544b8
+      size: 1514
+    - path: configs/model_config.yaml
+      hash: md5
+      md5: 931c4c3a782524c425464cdf9be5bc86
+      size: 630
+    - path: configs/traning_config.yaml
+      hash: md5
+      md5: 3b5a7df651945ddda2e6db635d547c75
+      size: 486
+    - path: data/processed
+      hash: md5
+      md5: 9797b24446746fccb4ad59ed5cfa0390.dir
+      size: 4838321
+      nfiles: 2
+    - path: data/raw/credit_risk_dataset.csv
+      hash: md5
+      md5: 9a01768113784fa109745fd8fe031eee
+      size: 1804682
+    - path: src/data_processing/ingestion.py
+      hash: md5
+      md5: 29a9c6763f30aa736500452164261028
+      size: 1930
+    - path: src/data_processing/transformation.py
+      hash: md5
+      md5: 4a03f455e9dea12847da72af9882c529
+      size: 3720
+    - path: src/features/feature_engineering.py
+      hash: md5
+      md5: 5780407d2c6388adbe5548a8b349bd9b
+      size: 3338
+    - path: src/models/evaluate.py
+      hash: md5
+      md5: a76d066a46ffde00bd0dd80e33dc7297
+      size: 4138
+    - path: src/models/train.py
+      hash: md5
+      md5: 849f469abc7603d897aacb331c3550f6
+      size: 3379
+    - path: src/utils/config_loader.py
+      hash: md5
+      md5: 549114ca8dc5ebd2472a36baa1e70071
+      size: 1215
+    - path: src/utils/logger.py
+      hash: md5
+      md5: 57d4314c7796d4474a773a4c2733f295
+      size: 548
+    params:
+      params.yaml:
+        models.lightgbm:
+          n_estimators: 200
+          max_depth: 6
+          learning_rate: 0.05
+          num_leaves: 31
+        models.logistic_regression:
+          C: 1.0
+          max_iter: 1000
+          solver: liblinear
+        models.xgboost:
+          n_estimators: 200
+          max_depth: 6
+          learning_rate: 0.06
+          subsample: 0.8
+          colsample_bytree: 0.8
+    outs:
+    - path: artifacts/metrics.json
+      hash: md5
+      md5: 4834327fd0dce7b26fa698e53448938a
+      size: 668
+    - path: artifacts/plots
+      hash: md5
+      md5: 0f572af3bb46690355e69842d15f2b0e.dir
+      size: 54034
+      nfiles: 3
+  model_explainability:
+    cmd: PYTHONPATH=. uv run --no-sync src/explainability/shap_explainer.py
+    deps:
+    - path: artifacts/feature_list.json
+      hash: md5
+      md5: 22936c305d8e30b5d9f68fdbeec5b332
+      size: 371
+    - path: artifacts/metrics.json
+      hash: md5
+      md5: 4834327fd0dce7b26fa698e53448938a
+      size: 668
+    - path: artifacts/models
+      hash: md5
+      md5: cbd37afe48edcc55e58d559bc8061599.dir
+      size: 1322539
+      nfiles: 3
+    - path: configs/data_config.yaml
+      hash: md5
+      md5: 0e8b398adfc614a558f2d20ce20544b8
+      size: 1514
+    - path: configs/model_config.yaml
+      hash: md5
+      md5: 931c4c3a782524c425464cdf9be5bc86
+      size: 630
+    - path: configs/traning_config.yaml
+      hash: md5
+      md5: 3b5a7df651945ddda2e6db635d547c75
+      size: 486
+    - path: data/processed
+      hash: md5
+      md5: 9797b24446746fccb4ad59ed5cfa0390.dir
+      size: 4838321
+      nfiles: 2
+    - path: data/raw/credit_risk_dataset.csv
+      hash: md5
+      md5: 9a01768113784fa109745fd8fe031eee
+      size: 1804682
+    - path: src/data_processing/ingestion.py
+      hash: md5
+      md5: 29a9c6763f30aa736500452164261028
+      size: 1930
+    - path: src/data_processing/transformation.py
+      hash: md5
+      md5: 4a03f455e9dea12847da72af9882c529
+      size: 3720
+    - path: src/explainability/shap_explainer.py
+      hash: md5
+      md5: 0033b34ac15f444061191e83e533e121
+      size: 3842
+    - path: src/features/feature_engineering.py
+      hash: md5
+      md5: 5780407d2c6388adbe5548a8b349bd9b
+      size: 3338
+    - path: src/models/evaluate.py
+      hash: md5
+      md5: a76d066a46ffde00bd0dd80e33dc7297
+      size: 4138
+    - path: src/models/train.py
+      hash: md5
+      md5: 849f469abc7603d897aacb331c3550f6
+      size: 3379
+    - path: src/utils/config_loader.py
+      hash: md5
+      md5: 549114ca8dc5ebd2472a36baa1e70071
+      size: 1215
+    - path: src/utils/logger.py
+      hash: md5
+      md5: 57d4314c7796d4474a773a4c2733f295
+      size: 548
+    params:
+      params.yaml:
+        models.lightgbm:
+          n_estimators: 200
+          max_depth: 6
+          learning_rate: 0.05
+          num_leaves: 31
+        models.logistic_regression:
+          C: 1.0
+          max_iter: 1000
+          solver: liblinear
+        models.xgboost:
+          n_estimators: 200
+          max_depth: 6
+          learning_rate: 0.06
+          subsample: 0.8
+          colsample_bytree: 0.8
+    outs:
+    - path: artifacts/shap_explainer.pkl
+      hash: md5
+      md5: acf4c2b6c361acd301b7ea87081a6a0e
+      size: 5118054

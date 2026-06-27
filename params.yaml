@@ -1,0 +1,23 @@
+data:
+  test_size: 0.2
+  random_state: 42
+  null_threshold: 0.4
+
+models:
+  logistic_regression:
+    C: 1.0
+    max_iter: 1000
+    solver: "liblinear"
+
+  xgboost:
+    n_estimators: 200
+    max_depth: 6
+    learning_rate: 0.06
+    subsample: 0.8
+    colsample_bytree: 0.8
+
+  lightgbm:
+    n_estimators: 200
+    max_depth: 6
+    learning_rate: 0.05
+    num_leaves: 31

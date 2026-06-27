@@ -1,0 +1,144 @@
+stages:
+  data_ingestion:
+    cmd: PYTHONPATH=. uv run --no-sync src/data_processing/ingestion.py
+    deps:
+      - data/raw/credit_risk_dataset.csv
+      - configs/data_config.yaml
+      - src/data_processing/ingestion.py
+      - src/utils/config_loader.py
+      - src/utils/logger.py
+    params:
+      - data.null_threshold
+    outs:
+      - artifacts/ingestion_report.json
+
+  data_validation:
+    cmd: PYTHONPATH=. uv run --no-sync src/data_processing/validation.py
+    deps:
+      - data/raw/credit_risk_dataset.csv
+      - artifacts/ingestion_report.json
+      - configs/data_config.yaml
+      - src/data_processing/validation.py
+      - src/data_processing/ingestion.py
+      - src/utils/config_loader.py
+      - src/utils/logger.py
+    params:
+      - data.null_threshold
+    outs:
+      - artifacts/validation_report.json
+
+  data_transformation:
+    cmd: PYTHONPATH=. uv run --no-sync src/data_processing/transformation.py
+    deps:
+      - data/raw/credit_risk_dataset.csv
+      - artifacts/validation_report.json
+      - configs/data_config.yaml
+      - configs/traning_config.yaml
+      - src/data_processing/transformation.py
+      - src/data_processing/ingestion.py
+      - src/utils/config_loader.py
+      - src/utils/logger.py
+    params:
+      - data.test_size
+      - data.random_state
+      - data.null_threshold
+    outs:
+      - data/processed
+      - artifacts/scaler.pkl
+      - artifacts/encoders.pkl
+
+  feature_engineering:
+    cmd: PYTHONPATH=. uv run --no-sync src/features/feature_engineering.py
+    deps:
+      - data/processed
+      - data/raw/credit_risk_dataset.csv
+      - configs/data_config.yaml
+      - configs/traning_config.yaml
+      - src/features/feature_engineering.py
+      - src/data_processing/transformation.py
+      - src/data_processing/ingestion.py
+      - src/utils/config_loader.py
+      - src/utils/logger.py
+    params:
+      - data.test_size
+      - data.random_state
+    outs:
+      - artifacts/feature_list.json
+
+  model_training:
+    cmd: PYTHONPATH=. uv run --no-sync src/models/train.py
+    deps:
+      - data/processed
+      - artifacts/feature_list.json
+      - data/raw/credit_risk_dataset.csv
+      - configs/data_config.yaml
+      - configs/model_config.yaml
+      - configs/traning_config.yaml
+      - src/models/train.py
+      - src/features/feature_engineering.py
+      - src/data_processing/transformation.py
+      - src/data_processing/ingestion.py
+      - src/utils/config_loader.py
+      - src/utils/logger.py
+    params:
+      - data.test_size
+      - data.random_state
+      - models.logistic_regression
+      - models.xgboost
+      - models.lightgbm
+    outs:
+      - artifacts/models
+      - artifacts/training_results.json
+
+  model_evaluation:
+    cmd: PYTHONPATH=. uv run --no-sync src/models/evaluate.py
+    deps:
+      - artifacts/models
+      - data/processed
+      - data/raw/credit_risk_dataset.csv
+      - artifacts/feature_list.json
+      - configs/data_config.yaml
+      - configs/model_config.yaml
+      - configs/traning_config.yaml
+      - src/models/evaluate.py
+      - src/models/train.py
+      - src/features/feature_engineering.py
+      - src/data_processing/transformation.py
+      - src/data_processing/ingestion.py
+      - src/utils/config_loader.py
+      - src/utils/logger.py
+    params:
+      - models.logistic_regression
+      - models.xgboost
+      - models.lightgbm
+    outs:
+      - artifacts/plots
+    metrics:
+      - artifacts/metrics.json:
+          cache: false
+
+  model_explainability:
+    cmd: PYTHONPATH=. uv run --no-sync src/explainability/shap_explainer.py
+    deps:
+      - artifacts/models
+      - data/processed
+      - data/raw/credit_risk_dataset.csv
+      - artifacts/feature_list.json
+      - artifacts/metrics.json
+      - configs/data_config.yaml
+      - configs/model_config.yaml
+      - configs/traning_config.yaml
+      - src/explainability/shap_explainer.py
+      - src/models/evaluate.py
+      - src/models/train.py
+      - src/features/feature_engineering.py
+      - src/data_processing/transformation.py
+      - src/data_processing/ingestion.py
+      - src/utils/config_loader.py
+      - src/utils/logger.py
+    params:
+      - models.logistic_regression
+      - models.xgboost
+      - models.lightgbm
+    outs:
+      - artifacts/shap_explainer.pkl
