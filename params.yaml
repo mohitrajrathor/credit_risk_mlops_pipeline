@@ -10,7 +10,7 @@ models:
     solver: "liblinear"
 
   xgboost:
-    n_estimators: 200
+    n_estimators: 150
     max_depth: 6
     learning_rate: 0.06
     subsample: 0.8

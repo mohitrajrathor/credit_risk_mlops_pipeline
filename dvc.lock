@@ -239,7 +239,7 @@ stages:
           max_iter: 1000
           solver: liblinear
         models.xgboost:
-          n_estimators: 200
+          n_estimators: 150
           max_depth: 6
           learning_rate: 0.06
           subsample: 0.8
@@ -327,7 +327,7 @@ stages:
           max_iter: 1000
           solver: liblinear
         models.xgboost:
-          n_estimators: 200
+          n_estimators: 150
           max_depth: 6
           learning_rate: 0.06
           subsample: 0.8
@@ -423,7 +423,7 @@ stages:
           max_iter: 1000
           solver: liblinear
         models.xgboost:
-          n_estimators: 200
+          n_estimators: 150
           max_depth: 6
           learning_rate: 0.06
           subsample: 0.8
@@ -431,5 +431,5 @@ stages:
     outs:
     - path: artifacts/shap_explainer.pkl
       hash: md5
-      md5: acf4c2b6c361acd301b7ea87081a6a0e
+      md5: 5580de472a90d696efcafe983685dd91
       size: 5118054
