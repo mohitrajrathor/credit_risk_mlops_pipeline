@@ -1,0 +1,8 @@
+.venv/
+data/
+.git/
+__pycache__/
+*.pyc
+mlruns/
+.dvc/
+notebooks/

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sys
+
 import joblib
 
 from api.predictor import FEATURE_LIST, load_artifacts, predict, preprocess
@@ -15,13 +17,35 @@ LOGGER = get_logger(__name__)
 SHAP_EXPLAINER = None
 
 
+def _register_shap_explainer_compatibility() -> None:
+    """Allow legacy pickles created from the training script to load in the API process."""
+    try:
+        from src.explainability.shap_explainer import ShapExplainer
+    except Exception as error:  # pragma: no cover - defensive import guard
+        LOGGER.debug("Unable to import SHAP explainer class for compatibility: %s", error)
+        return
+
+    main_module = sys.modules.get("__main__")
+    if main_module is None:
+        return
+
+    if getattr(main_module, "ShapExplainer", None) is not ShapExplainer:
+        setattr(main_module, "ShapExplainer", ShapExplainer)
+
+
 def load_shap_explainer() -> None:
     """Load the saved SHAP explainer once at startup."""
     global SHAP_EXPLAINER
 
     shap_explainer_path = PROJECT_ROOT / load_training_config()["artifacts"]["shap_explainer_path"]
-    SHAP_EXPLAINER = joblib.load(shap_explainer_path)
-    LOGGER.info("Loaded SHAP explainer from %s", shap_explainer_path)
+    _register_shap_explainer_compatibility()
+
+    try:
+        SHAP_EXPLAINER = joblib.load(shap_explainer_path)
+        LOGGER.info("Loaded SHAP explainer from %s", shap_explainer_path)
+    except Exception as error:  # pragma: no cover - defensive runtime guard
+        SHAP_EXPLAINER = None
+        LOGGER.warning("Unable to load SHAP explainer from %s: %s", shap_explainer_path, error)
 
 
 def explain(input_data: ApplicantInput) -> ExplainResponse:
@@ -31,6 +55,15 @@ def explain(input_data: ApplicantInput) -> ExplainResponse:
     if SHAP_EXPLAINER is None:
         load_artifacts()
         load_shap_explainer()
+
+    if SHAP_EXPLAINER is None:
+        prediction = predict(input_data)
+        return ExplainResponse(
+            prediction=prediction,
+            base_value=0.0,
+            feature_contributions={},
+            top_risk_factors=[],
+        )
 
     processed_df = preprocess(input_data)
     explanation = SHAP_EXPLAINER.explain_single(processed_df)
