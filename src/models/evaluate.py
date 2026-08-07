@@ -135,9 +135,10 @@ def evaluate_models(test_df: pd.DataFrame) -> str:
     best_model_name = str(metrics_df.index[0])
     LOGGER.info("Best model by F1 weighted: %s", best_model_name)
 
-    # Save best model info JSON
+    # Save best model info JSON (with version placeholder)
     best_model_info = {
         "model_name": best_model_name,
+        "version": "N/A",
         "run_id": run_ids.get(best_model_name, ""),
         "metrics": all_metrics[best_model_name],
     }

@@ -52,7 +52,8 @@ def register_best_model() -> None:
 
     LOGGER.info("Promoting best model '%s' version %s to Staging", registered_name, version)
 
-    # Use MlflowClient to transition stage to Staging
+    # Note: Only the top-performing (best) model is promoted to 'Staging'.
+    # Other candidate models remain registered in MLflow without stage assignment.
     client = MlflowClient(tracking_uri=tracking_uri)
     client.transition_model_version_stage(
         name=registered_name,
@@ -60,6 +61,12 @@ def register_best_model() -> None:
         stage="Staging",
     )
     LOGGER.info("Successfully transitioned model '%s' version %s to Staging stage", registered_name, version)
+
+    # Update best_model_info.json with the registered MLflow version
+    best_info["version"] = version
+    with best_model_info_path.open("w", encoding="utf-8") as file:
+        json.dump(best_info, file, indent=2)
+    LOGGER.info("Updated %s with registered model version %s", best_model_info_path, version)
 
 
 if __name__ == "__main__":

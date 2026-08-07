@@ -29,7 +29,17 @@ def main() -> None:
     LOGGER.info("Setting MLflow tracking URI: %s", tracking_uri)
     mlflow.set_tracking_uri(tracking_uri)
     LOGGER.info("Setting MLflow experiment name: %s", experiment_name)
-    mlflow.set_experiment(experiment_name)
+    experiment = mlflow.set_experiment(experiment_name)
+
+    # Check if experiment already has existing runs
+    client = mlflow.tracking.MlflowClient(tracking_uri=tracking_uri)
+    existing_runs = client.search_runs(experiment_ids=[experiment.experiment_id])
+    if existing_runs:
+        LOGGER.warning(
+            "Experiment '%s' already contains %d run(s). Proceeding with pipeline execution.",
+            experiment_name,
+            len(existing_runs),
+        )
 
     LOGGER.info("Starting data ingestion")
     raw_df = ingest_data()
