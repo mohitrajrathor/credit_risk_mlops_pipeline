@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
 import joblib
 import matplotlib.pyplot as plt
+import mlflow
 import pandas as pd
 import seaborn as sns
 from sklearn.metrics import (
@@ -43,8 +45,8 @@ def _save_confusion_matrix_plot(
     matrix: Any,
     model_name: str,
     plots_dir: Path,
-) -> None:
-    """Save a confusion matrix image."""
+) -> Path:
+    """Save a confusion matrix image and return its path."""
     plots_dir.mkdir(parents=True, exist_ok=True)
     figure_path = plots_dir / f"{model_name}_confusion_matrix.png"
 
@@ -56,10 +58,16 @@ def _save_confusion_matrix_plot(
     plt.tight_layout()
     plt.savefig(figure_path)
     plt.close()
+    return figure_path
 
 
 def evaluate_models(test_df: pd.DataFrame) -> str:
-    """Evaluate all saved models and return the best model name."""
+    """Evaluate all saved models, log metrics/artifacts to MLflow, and return best model name."""
+    tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
+    experiment_name = os.getenv("MLFLOW_EXPERIMENT_NAME", "credit-risk-experiment")
+    mlflow.set_tracking_uri(tracking_uri)
+    mlflow.set_experiment(experiment_name)
+
     data_config = load_data_config()
     training_config = load_training_config()
 
@@ -67,7 +75,15 @@ def evaluate_models(test_df: pd.DataFrame) -> str:
     models_dir = PROJECT_ROOT / training_config["artifacts"]["models_dir"]
     plots_dir = PROJECT_ROOT / training_config["artifacts"]["plots_dir"]
     metrics_path = PROJECT_ROOT / training_config["artifacts"]["metrics_path"]
+    run_ids_path = PROJECT_ROOT / "artifacts" / "run_ids.json"
+    best_model_info_path = PROJECT_ROOT / "artifacts" / "best_model_info.json"
+
     metrics_path.parent.mkdir(parents=True, exist_ok=True)
+
+    run_ids: dict[str, str] = {}
+    if run_ids_path.exists():
+        with run_ids_path.open("r", encoding="utf-8") as file:
+            run_ids = json.load(file)
 
     X_test = test_df.drop(columns=[target_column])
     y_test = test_df[target_column]
@@ -81,7 +97,7 @@ def evaluate_models(test_df: pd.DataFrame) -> str:
         predictions = model.predict(X_test)
         scores = _get_model_probability(model, X_test)
         matrix = confusion_matrix(y_test, predictions)
-        _save_confusion_matrix_plot(matrix, model_name, plots_dir)
+        figure_path = _save_confusion_matrix_plot(matrix, model_name, plots_dir)
 
         metrics = {
             "accuracy": float(accuracy_score(y_test, predictions)),
@@ -98,6 +114,17 @@ def evaluate_models(test_df: pd.DataFrame) -> str:
         all_metrics[model_name] = metrics
         LOGGER.info("Metrics for %s: %s", model_name, metrics)
 
+        # Log evaluation metrics and confusion matrix artifact to MLflow run
+        run_id = run_ids.get(model_name)
+        if run_id:
+            with mlflow.start_run(run_id=run_id):
+                mlflow.log_metrics(metrics)
+                mlflow.log_artifact(str(figure_path))
+        else:
+            with mlflow.start_run(run_name=f"evaluate_{model_name}"):
+                mlflow.log_metrics(metrics)
+                mlflow.log_artifact(str(figure_path))
+
     with metrics_path.open("w", encoding="utf-8") as file:
         json.dump(all_metrics, file, indent=2)
 
@@ -107,6 +134,17 @@ def evaluate_models(test_df: pd.DataFrame) -> str:
 
     best_model_name = str(metrics_df.index[0])
     LOGGER.info("Best model by F1 weighted: %s", best_model_name)
+
+    # Save best model info JSON
+    best_model_info = {
+        "model_name": best_model_name,
+        "run_id": run_ids.get(best_model_name, ""),
+        "metrics": all_metrics[best_model_name],
+    }
+    with best_model_info_path.open("w", encoding="utf-8") as file:
+        json.dump(best_model_info, file, indent=2)
+
+    LOGGER.info("Saved best model info to %s", best_model_info_path)
     return best_model_name
 
 

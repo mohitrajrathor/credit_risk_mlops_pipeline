@@ -234,3 +234,5 @@ mlruns/
 .vscode/
 .DS_Store
 credentials/
+
+mlflow-data/

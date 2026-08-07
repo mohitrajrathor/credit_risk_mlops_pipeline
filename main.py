@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import os
+import mlflow
 
 from src.data_processing.ingestion import ingest_data
 from src.data_processing.transformation import transform_data
@@ -10,6 +12,7 @@ from src.data_processing.validation import validate_data
 from src.explainability.shap_explainer import generate_shap_explanations
 from src.features.feature_engineering import engineer_features
 from src.models.evaluate import evaluate_models
+from src.models.registry import register_best_model
 from src.models.train import train_models
 from src.utils.config_loader import PROJECT_ROOT, load_training_config
 from src.utils.logger import get_logger
@@ -20,6 +23,14 @@ LOGGER = get_logger(__name__)
 
 def main() -> None:
     """Run the full local machine learning pipeline."""
+    tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
+    experiment_name = os.getenv("MLFLOW_EXPERIMENT_NAME", "credit-risk-experiment")
+
+    LOGGER.info("Setting MLflow tracking URI: %s", tracking_uri)
+    mlflow.set_tracking_uri(tracking_uri)
+    LOGGER.info("Setting MLflow experiment name: %s", experiment_name)
+    mlflow.set_experiment(experiment_name)
+
     LOGGER.info("Starting data ingestion")
     raw_df = ingest_data()
     LOGGER.info("Finished data ingestion")
@@ -44,6 +55,10 @@ def main() -> None:
     best_model_name = evaluate_models(featured_test_df)
     LOGGER.info("Finished model evaluation")
 
+    LOGGER.info("Starting model registration")
+    register_best_model()
+    LOGGER.info("Finished model registration")
+
     LOGGER.info("Starting SHAP explainability")
     generate_shap_explanations(best_model_name, featured_train_df, featured_test_df)
     LOGGER.info("Finished SHAP explainability")
@@ -59,3 +74,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
