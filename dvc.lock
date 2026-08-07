@@ -24,8 +24,8 @@ stages:
       md5: 57d4314c7796d4474a773a4c2733f295
       size: 548
     params:
-      params.yaml:
-        data.null_threshold: 0.4
+      configs/data_config.yaml:
+        preprocessing.null_threshold: 0.4
     outs:
     - path: artifacts/ingestion_report.json
       hash: md5
@@ -63,8 +63,8 @@ stages:
       md5: 57d4314c7796d4474a773a4c2733f295
       size: 548
     params:
-      params.yaml:
-        data.null_threshold: 0.4
+      configs/data_config.yaml:
+        preprocessing.null_threshold: 0.4
     outs:
     - path: artifacts/validation_report.json
       hash: md5
@@ -106,10 +106,11 @@ stages:
       md5: 57d4314c7796d4474a773a4c2733f295
       size: 548
     params:
-      params.yaml:
-        data.null_threshold: 0.4
-        data.random_state: 42
-        data.test_size: 0.2
+      configs/data_config.yaml:
+        preprocessing.null_threshold: 0.4
+      configs/traning_config.yaml:
+        training.random_state: 42
+        training.test_size: 0.2
     outs:
     - path: artifacts/encoders.pkl
       hash: md5
@@ -165,9 +166,9 @@ stages:
       md5: 57d4314c7796d4474a773a4c2733f295
       size: 548
     params:
-      params.yaml:
-        data.random_state: 42
-        data.test_size: 0.2
+      configs/traning_config.yaml:
+        training.random_state: 42
+        training.test_size: 0.2
     outs:
     - path: artifacts/feature_list.json
       hash: md5
@@ -215,8 +216,8 @@ stages:
       size: 3338
     - path: src/models/train.py
       hash: md5
-      md5: 849f469abc7603d897aacb331c3550f6
-      size: 3379
+      md5: a32dd91e3b3b8f6731653ead64c210e0
+      size: 5267
     - path: src/utils/config_loader.py
       hash: md5
       md5: 549114ca8dc5ebd2472a36baa1e70071
@@ -226,24 +227,40 @@ stages:
       md5: 57d4314c7796d4474a773a4c2733f295
       size: 548
     params:
-      params.yaml:
-        data.random_state: 42
-        data.test_size: 0.2
+      configs/model_config.yaml:
         models.lightgbm:
-          n_estimators: 200
-          max_depth: 6
-          learning_rate: 0.05
-          num_leaves: 31
+          enabled: true
+          name: lightgbm
+          params:
+            n_estimators: 200
+            max_depth: 6
+            learning_rate: 0.05
+            num_leaves: 31
+            random_state: 42
+            verbose: -1
+            force_col_wise: true
         models.logistic_regression:
-          C: 1.0
-          max_iter: 1000
-          solver: liblinear
+          enabled: true
+          name: logistic_regression
+          params:
+            C: 1.0
+            max_iter: 1000
+            random_state: 42
+            solver: liblinear
         models.xgboost:
-          n_estimators: 150
-          max_depth: 6
-          learning_rate: 0.06
-          subsample: 0.8
-          colsample_bytree: 0.8
+          enabled: true
+          name: xgboost
+          params:
+            n_estimators: 200
+            max_depth: 6
+            learning_rate: 0.05
+            subsample: 0.8
+            colsample_bytree: 0.8
+            random_state: 42
+            eval_metric: logloss
+      configs/traning_config.yaml:
+        training.cv_folds: 5
+        training.primary_metric: f1_weighted
     outs:
     - path: artifacts/models
       hash: md5
@@ -301,12 +318,12 @@ stages:
       size: 3338
     - path: src/models/evaluate.py
       hash: md5
-      md5: a76d066a46ffde00bd0dd80e33dc7297
-      size: 4138
+      md5: 363d06f2c7c6951aecca19ad07c62907
+      size: 5663
     - path: src/models/train.py
       hash: md5
-      md5: 849f469abc7603d897aacb331c3550f6
-      size: 3379
+      md5: a32dd91e3b3b8f6731653ead64c210e0
+      size: 5267
     - path: src/utils/config_loader.py
       hash: md5
       md5: 549114ca8dc5ebd2472a36baa1e70071
@@ -316,22 +333,37 @@ stages:
       md5: 57d4314c7796d4474a773a4c2733f295
       size: 548
     params:
-      params.yaml:
+      configs/model_config.yaml:
         models.lightgbm:
-          n_estimators: 200
-          max_depth: 6
-          learning_rate: 0.05
-          num_leaves: 31
+          enabled: true
+          name: lightgbm
+          params:
+            n_estimators: 200
+            max_depth: 6
+            learning_rate: 0.05
+            num_leaves: 31
+            random_state: 42
+            verbose: -1
+            force_col_wise: true
         models.logistic_regression:
-          C: 1.0
-          max_iter: 1000
-          solver: liblinear
+          enabled: true
+          name: logistic_regression
+          params:
+            C: 1.0
+            max_iter: 1000
+            random_state: 42
+            solver: liblinear
         models.xgboost:
-          n_estimators: 150
-          max_depth: 6
-          learning_rate: 0.06
-          subsample: 0.8
-          colsample_bytree: 0.8
+          enabled: true
+          name: xgboost
+          params:
+            n_estimators: 200
+            max_depth: 6
+            learning_rate: 0.05
+            subsample: 0.8
+            colsample_bytree: 0.8
+            random_state: 42
+            eval_metric: logloss
     outs:
     - path: artifacts/metrics.json
       hash: md5
@@ -397,12 +429,12 @@ stages:
       size: 3338
     - path: src/models/evaluate.py
       hash: md5
-      md5: a76d066a46ffde00bd0dd80e33dc7297
-      size: 4138
+      md5: 363d06f2c7c6951aecca19ad07c62907
+      size: 5663
     - path: src/models/train.py
       hash: md5
-      md5: 849f469abc7603d897aacb331c3550f6
-      size: 3379
+      md5: a32dd91e3b3b8f6731653ead64c210e0
+      size: 5267
     - path: src/utils/config_loader.py
       hash: md5
       md5: 549114ca8dc5ebd2472a36baa1e70071
@@ -412,24 +444,39 @@ stages:
       md5: 57d4314c7796d4474a773a4c2733f295
       size: 548
     params:
-      params.yaml:
+      configs/model_config.yaml:
         models.lightgbm:
-          n_estimators: 200
-          max_depth: 6
-          learning_rate: 0.05
-          num_leaves: 31
+          enabled: true
+          name: lightgbm
+          params:
+            n_estimators: 200
+            max_depth: 6
+            learning_rate: 0.05
+            num_leaves: 31
+            random_state: 42
+            verbose: -1
+            force_col_wise: true
         models.logistic_regression:
-          C: 1.0
-          max_iter: 1000
-          solver: liblinear
+          enabled: true
+          name: logistic_regression
+          params:
+            C: 1.0
+            max_iter: 1000
+            random_state: 42
+            solver: liblinear
         models.xgboost:
-          n_estimators: 150
-          max_depth: 6
-          learning_rate: 0.06
-          subsample: 0.8
-          colsample_bytree: 0.8
+          enabled: true
+          name: xgboost
+          params:
+            n_estimators: 200
+            max_depth: 6
+            learning_rate: 0.05
+            subsample: 0.8
+            colsample_bytree: 0.8
+            random_state: 42
+            eval_metric: logloss
     outs:
     - path: artifacts/shap_explainer.pkl
       hash: md5
-      md5: 5580de472a90d696efcafe983685dd91
+      md5: 0f857f2952c0ee96169cbd28ae928463
       size: 5118054

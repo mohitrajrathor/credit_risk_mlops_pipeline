@@ -8,7 +8,8 @@ stages:
       - src/utils/config_loader.py
       - src/utils/logger.py
     params:
-      - data.null_threshold
+      - configs/data_config.yaml:
+          - preprocessing.null_threshold
     outs:
       - artifacts/ingestion_report.json
 
@@ -23,7 +24,8 @@ stages:
       - src/utils/config_loader.py
       - src/utils/logger.py
     params:
-      - data.null_threshold
+      - configs/data_config.yaml:
+          - preprocessing.null_threshold
     outs:
       - artifacts/validation_report.json
 
@@ -39,9 +41,11 @@ stages:
       - src/utils/config_loader.py
       - src/utils/logger.py
     params:
-      - data.test_size
-      - data.random_state
-      - data.null_threshold
+      - configs/traning_config.yaml:
+          - training.test_size
+          - training.random_state
+      - configs/data_config.yaml:
+          - preprocessing.null_threshold
     outs:
       - data/processed
       - artifacts/scaler.pkl
@@ -60,8 +64,9 @@ stages:
       - src/utils/config_loader.py
       - src/utils/logger.py
     params:
-      - data.test_size
-      - data.random_state
+      - configs/traning_config.yaml:
+          - training.test_size
+          - training.random_state
     outs:
       - artifacts/feature_list.json
 
@@ -81,14 +86,18 @@ stages:
       - src/utils/config_loader.py
       - src/utils/logger.py
     params:
-      - data.test_size
-      - data.random_state
-      - models.logistic_regression
-      - models.xgboost
-      - models.lightgbm
+      - configs/traning_config.yaml:
+          - training.cv_folds
+          - training.primary_metric
+      - configs/model_config.yaml:
+          - models.logistic_regression
+          - models.xgboost
+          - models.lightgbm
     outs:
       - artifacts/models
-      - artifacts/training_results.json
+    metrics:
+      - artifacts/training_results.json:
+          cache: false
 
   model_evaluation:
     cmd: PYTHONPATH=. uv run --no-sync src/models/evaluate.py
@@ -108,13 +117,15 @@ stages:
       - src/utils/config_loader.py
       - src/utils/logger.py
     params:
-      - models.logistic_regression
-      - models.xgboost
-      - models.lightgbm
-    outs:
-      - artifacts/plots
+      - configs/model_config.yaml:
+          - models.logistic_regression
+          - models.xgboost
+          - models.lightgbm
     metrics:
       - artifacts/metrics.json:
+          cache: false
+    plots:
+      - artifacts/plots:
           cache: false
 
   model_explainability:
@@ -137,8 +148,9 @@ stages:
       - src/utils/config_loader.py
       - src/utils/logger.py
     params:
-      - models.logistic_regression
-      - models.xgboost
-      - models.lightgbm
+      - configs/model_config.yaml:
+          - models.logistic_regression
+          - models.xgboost
+          - models.lightgbm
     outs:
       - artifacts/shap_explainer.pkl

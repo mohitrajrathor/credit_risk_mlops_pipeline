@@ -121,12 +121,23 @@ def train_models(train_df: pd.DataFrame) -> dict[str, dict[str, Any]]:
             LOGGER.info("%s mean CV score: %.4f", model_name, mean_cv)
             LOGGER.info("Saved model to %s (run_id: %s)", model_path, run_id)
 
+    metrics_path = PROJECT_ROOT / training_config["artifacts"]["metrics_path"]
+    metrics_summary = {
+        model_name: {
+            "mean_cv_score": res["mean_cv_score"],
+        }
+        for model_name, res in results.items()
+    }
+    with metrics_path.open("w", encoding="utf-8") as file:
+        json.dump(metrics_summary, file, indent=2)
+
     with training_results_path.open("w", encoding="utf-8") as file:
         json.dump(results, file, indent=2)
 
     with run_ids_path.open("w", encoding="utf-8") as file:
         json.dump(run_ids, file, indent=2)
 
+    LOGGER.info("Saved metrics to %s", metrics_path)
     LOGGER.info("Saved training results to %s", training_results_path)
     LOGGER.info("Saved MLflow run IDs to %s", run_ids_path)
     return results
