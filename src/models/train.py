@@ -101,13 +101,14 @@ def train_models(train_df: pd.DataFrame) -> dict[str, dict[str, Any]]:
             mean_cv = float(cv_scores.mean())
             mlflow.log_metrics({"mean_cv_score": mean_cv})
 
-            # Log model artifact based on framework
+            # Log model artifact based on framework and register model
+            registered_name = f"credit-risk-{model_name}"
             if model_name == "xgboost":
-                mlflow.xgboost.log_model(model, artifact_path="model")
+                mlflow.xgboost.log_model(model, artifact_path="model", registered_model_name=registered_name)
             elif model_name == "lightgbm":
-                mlflow.lightgbm.log_model(model, artifact_path="model")
+                mlflow.lightgbm.log_model(model, artifact_path="model", registered_model_name=registered_name)
             else:
-                mlflow.sklearn.log_model(model, artifact_path="model")
+                mlflow.sklearn.log_model(model, artifact_path="model", registered_model_name=registered_name)
 
             model_path = models_dir / f"{model_name}.pkl"
             joblib.dump(model, model_path)
