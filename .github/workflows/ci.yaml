@@ -1,0 +1,39 @@
+name: Test and reporting workflow
+
+on: 
+    push:
+        branches: [dev]
+    pull_request:
+        branches: [main]
+
+jobs:
+    build-and-test:
+        runs-on: ubuntu-latest
+        permissions:
+          contents: write
+          pull-requests: write
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            
+            - name: Setup Python
+              uses: actions/setup-python@v7
+              with: 
+                python-version: "3.12"
+                
+            - name: Install Libraries
+              run: python -m pip install -r requirements.txt
+                
+            - name: Test pipeline
+              run: python -m pytest tests/test_pipeline.py
+            
+            - name: CML setup
+              uses: iterative/setup-cml@v2
+
+            - name: Publish report
+              env:
+                REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: cml comment create reports/tests_report.md 
+            
+            
