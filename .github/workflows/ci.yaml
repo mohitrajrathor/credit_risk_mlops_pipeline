@@ -1,4 +1,4 @@
-name: ci - cd workflow
+name: Test and reporting workflow
 
 on: 
     push:
@@ -9,6 +9,9 @@ on:
 jobs:
     build-and-test:
         runs-on: ubuntu-latest
+        permissions:
+          contents: write
+          pull-requests: write
 
         steps:
             - name: Checkout code
