@@ -29,6 +29,8 @@ jobs:
               uses: iterative/setup-cml@v2
 
             - name: Publish report
+              env:
+                REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: cml comment create reports/tests_report.md 
             
             
