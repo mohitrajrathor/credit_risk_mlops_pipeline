@@ -1,4 +1,4 @@
-# Credit Risk MLOps Pipeline 🏦
+# Credit Risk MLOps Pipeline
 
 An end-to-end, production-ready Machine Learning Operations (MLOps) pipeline for predicting credit risk and loan default probability. This project integrates data versioning, automated training pipelines, experiment tracking, model explainability, and a RESTful API service.
 
@@ -15,6 +15,12 @@ Assessing credit risk accurately is crucial for financial institutions to minimi
 - **Explain Model Predictions**: Provide feature importance and local instance explanations using **SHAP**.
 - **Serve via REST API**: Expose real-time prediction and explanation endpoints powered by **FastAPI** and **Pydantic**.
 - **Orchestrate & Containerize**: Reproduce pipeline stages with **DVC** and deploy using **Docker** & **Docker Compose**.
+
+---
+
+## 🏗️ Architecture Diagram
+
+![Credit Risk MLOps architecture diagram](media/arch_diag.jpg)
 
 ---
 
