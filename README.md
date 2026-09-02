@@ -4,7 +4,7 @@ An end-to-end, production-ready Machine Learning Operations (MLOps) pipeline for
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 Assessing credit risk accurately is crucial for financial institutions to minimize loan default losses while maximizing lending efficiency. This project implements a complete MLOps workflow to:
 
@@ -18,13 +18,13 @@ Assessing credit risk accurately is crucial for financial institutions to minimi
 
 ---
 
-## 🏗️ Architecture Diagram
+## Architecture Diagram
 
 ![Credit Risk MLOps architecture diagram](media/arch_diag.jpg)
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Language**: Python 3.12
 - **Machine Learning**: Scikit-Learn, XGBoost, LightGBM, SHAP
@@ -35,7 +35,7 @@ Assessing credit risk accurately is crucial for financial institutions to minimi
 
 ---
 
-## 📁 Directory Structure
+## Directory Structure
 
 ```text
 .
@@ -67,7 +67,7 @@ Assessing credit risk accurately is crucial for financial institutions to minimi
 
 ---
 
-## 🚀 Quick Start Guide
+## Quick Start Guide
 
 ### 1. Prerequisites
 - Python 3.12+
@@ -100,7 +100,7 @@ This will ingest data, run schema validation, preprocess features, train candida
 
 ---
 
-## 🌐 Serving the API
+## Serving the API
 
 ### Option A: Local Run with Uvicorn
 Start the FastAPI server locally:
@@ -123,7 +123,7 @@ docker-compose up --build
 
 ---
 
-## 🔌 API Endpoints Summary
+## API Endpoints Summary
 
 | Endpoint | Method | Description |
 | :--- | :--- | :--- |
@@ -162,12 +162,12 @@ docker-compose up --build
 
 ---
 
-## 📊 Model Evaluation & Metrics
+## Model Evaluation & Metrics
 
 Models are evaluated on an 80/20 train-test split using weighted F1-score, ROC-AUC, Precision, and Recall. Metrics are saved to `artifacts/metrics.json` and logged to MLflow during training.
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
